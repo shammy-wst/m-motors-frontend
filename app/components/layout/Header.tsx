@@ -1,84 +1,90 @@
-import Link from 'next/link';
+"use client";
+
+import Link from "next/link";
+import { useState } from "react";
+import { navigationLinks } from "./Navigation";
 
 const Header = () => {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
   return (
-    <header className="fixed w-full bg-black text-white z-50">
+    <header className="fixed w-full bg-black/90 backdrop-blur-sm text-white z-50">
       <div className="flex flex-col w-full">
         {/* Top Navigation */}
-        <nav className="flex items-center justify-between px-4 py-2 border-b border-gray-800">
-          <Link href="/" className="text-xl font-bold">
+        <nav className="flex items-center justify-between h-16 px-6">
+          <Link href="/" className="text-2xl font-bold font-rem">
             M-MOTORS
           </Link>
-          <div className="hidden lg:flex items-center space-x-6">
-            <Link href="/accueil" className="hover:text-gray-300">Accueil</Link>
-            <Link href="/catalogue" className="hover:text-gray-300">Catalogue</Link>
-            <Link href="/sav" className="hover:text-gray-300">SAV</Link>
-            <Link href="/service-financier" className="hover:text-gray-300">Service Financier</Link>
-            <Link href="/service-commercial" className="hover:text-gray-300">Service Commercial</Link>
-            <Link href="/reprise-vehicule" className="hover:text-gray-300">Reprise de Véhicule</Link>
-            <Link href="/essai-routier" className="hover:text-gray-300">Essai Routier</Link>
-            <Link href="/contact" className="hover:text-gray-300">Contact</Link>
-            <Link href="/connexion" className="hover:text-gray-300">Connexion</Link>
+          <div className="hidden lg:flex items-center space-x-8">
+            {Object.entries(navigationLinks).map(
+              ([key, links]) =>
+                links[0] && (
+                  <Link
+                    key={links[0].href}
+                    href={links[0].href}
+                    className="hover:text-gray-300 transition-colors font-inter"
+                  >
+                    {links[0].label}
+                  </Link>
+                )
+            )}
           </div>
-          <button className="lg:hidden">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+          <button
+            className="lg:hidden flex items-center justify-center w-10 h-10 rounded-lg hover:bg-white/10 transition-colors"
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            aria-label="Toggle menu"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M4 6h16M4 12h16M4 18h16"
+              />
             </svg>
           </button>
         </nav>
 
-        {/* Secondary Navigation */}
-        <nav className="hidden lg:flex justify-between px-4 py-2 text-sm">
-          <div className="flex space-x-6">
-            <div className="group relative">
-              <span className="cursor-pointer">Nos voitures</span>
-              <div className="hidden group-hover:flex flex-col absolute bg-black min-w-[200px] p-2">
-                <Link href="/catalogue" className="hover:text-gray-300 py-1">Catalogue</Link>
-                <Link href="/voiture-une" className="hover:text-gray-300 py-1">Voiture Une</Link>
-                <Link href="/voiture-deux" className="hover:text-gray-300 py-1">Voiture Deux</Link>
-                <Link href="/nouveaux-modeles" className="hover:text-gray-300 py-1">Nouveaux Modèles</Link>
-                <Link href="/diesel" className="hover:text-gray-300 py-1">Diesel</Link>
-                <Link href="/essence" className="hover:text-gray-300 py-1">Essence</Link>
-                <Link href="/hybride" className="hover:text-gray-300 py-1">Hybride</Link>
-              </div>
-            </div>
-            <div className="group relative">
-              <span className="cursor-pointer">Acheter</span>
-              <div className="hidden group-hover:flex flex-col absolute bg-black min-w-[200px] p-2">
-                <Link href="/reserver-essai" className="hover:text-gray-300 py-1">Réserver un essai</Link>
-                <Link href="/reprise-vehicule" className="hover:text-gray-300 py-1">Reprise de Véhicule</Link>
-                <Link href="/offres-speciales" className="hover:text-gray-300 py-1">Offres Spéciales</Link>
-                <Link href="/service-financier" className="hover:text-gray-300 py-1">Service Financier</Link>
-              </div>
-            </div>
-            <div className="group relative">
-              <span className="cursor-pointer">Service Interne</span>
-              <div className="hidden group-hover:flex flex-col absolute bg-black min-w-[200px] p-2">
-                <Link href="/it-support" className="hover:text-gray-300 py-1">IT / Support technique</Link>
-                <Link href="/recrutement" className="hover:text-gray-300 py-1">Recrutement</Link>
-                <Link href="/gestion-employes" className="hover:text-gray-300 py-1">Gestion des employés</Link>
-              </div>
-            </div>
-            <div className="group relative">
-              <span className="cursor-pointer">Contact</span>
-              <div className="hidden group-hover:flex flex-col absolute bg-black min-w-[200px] p-2">
-                <Link href="/nous-contacter" className="hover:text-gray-300 py-1">Nous contacter</Link>
-                <Link href="/nos-agences" className="hover:text-gray-300 py-1">Nos agences</Link>
-              </div>
-            </div>
-            <div className="group relative">
-              <span className="cursor-pointer">M-MOTORS EXPERIENCE</span>
-              <div className="hidden group-hover:flex flex-col absolute bg-black min-w-[200px] p-2">
-                <Link href="/notre-marque" className="hover:text-gray-300 py-1">Notre marque</Link>
-                <Link href="/notre-histoire" className="hover:text-gray-300 py-1">Notre histoire</Link>
-                <Link href="/nos-innovations" className="hover:text-gray-300 py-1">Nos innovations</Link>
-              </div>
+        {/* Mobile Menu */}
+        {isMobileMenuOpen && (
+          <div className="lg:hidden bg-black/95 backdrop-blur-sm fixed inset-0 top-16 z-40 overflow-y-auto">
+            <div className="flex flex-col w-full min-h-[calc(100vh-4rem)] py-4">
+              {Object.entries(navigationLinks).map(([key, links]) => (
+                <div
+                  key={key}
+                  className="border-b border-gray-800 last:border-none"
+                >
+                  <div className="px-6 py-4">
+                    <h3 className="text-gray-400 text-sm uppercase font-rem tracking-wider">
+                      {key.replace(/([A-Z])/g, " $1").trim()}
+                    </h3>
+                    <div className="mt-3 flex flex-col">
+                      {links.map((link) => (
+                        <Link
+                          key={link.href}
+                          href={link.href}
+                          className="py-3 hover:text-gray-300 transition-colors font-inter text-base"
+                          onClick={() => setIsMobileMenuOpen(false)}
+                        >
+                          {link.label}
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
-        </nav>
+        )}
       </div>
     </header>
   );
 };
 
-export default Header; 
+export default Header;

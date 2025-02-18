@@ -1,27 +1,39 @@
+"use client";
+
+import Image from "next/image";
+
 const Hero = () => {
   return (
-    <section className="relative flex min-h-[calc(100vh-120px)]">
-      <div className="absolute inset-0">
-        <img
-          src="/images/hero-bg.jpg"
+    <section className="flex w-full h-[100svh] relative">
+      <div className="flex absolute inset-0">
+        <Image
+          src="/assets/images/backgrounds/hero-bg.jpg"
           alt="M-Motors Background"
-          className="w-full h-full object-cover"
+          fill
+          priority
+          className="object-cover object-center"
+          quality={100}
+          sizes="100vw"
         />
-        <div className="absolute inset-0 bg-black/50" />
+        <div className="absolute inset-0 bg-black/60" />
       </div>
-      <div className="relative flex-1 flex flex-col items-center justify-center px-4">
-        <div className="flex flex-col items-center max-w-4xl text-center">
-          <h1 className="text-4xl md:text-6xl font-bold mb-4 text-white">M-MOTORS</h1>
-          <p className="text-lg md:text-xl mb-8 text-white">
-            Find Your Perfect Ride - Quality, Trust, and Affordable Deals 🚗
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4">
-            <button className="bg-white text-black px-8 py-3 rounded-full hover:bg-gray-200 transition">
-              Découvrir nos véhicules
-            </button>
-            <button className="border-2 border-white text-white px-8 py-3 rounded-full hover:bg-white hover:text-black transition">
-              Prendre rendez-vous
-            </button>
+      <div className="flex flex-1 items-center justify-center relative z-10">
+        <div className="flex flex-1 px-4 md:px-8 lg:px-[20%]">
+          <div className="flex flex-1 flex-col items-center">
+            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-white font-rem mb-4 md:mb-6 text-center">
+              M-MOTORS
+            </h1>
+            <p className="text-lg md:text-xl lg:text-2xl text-white font-inter max-w-2xl text-center mb-8 md:mb-10">
+              Find Your Perfect Ride - Quality, Trust, and Affordable Deals 🚗
+            </p>
+            <div className="flex flex-col w-full max-w-md gap-4 md:gap-6">
+              <button className="w-full bg-white text-black px-6 py-4 rounded-full hover:bg-gray-200 transition-all font-inter text-base md:text-lg">
+                Découvrir nos véhicules
+              </button>
+              <button className="w-full border-2 border-white text-white px-6 py-4 rounded-full hover:bg-white hover:text-black transition-all font-inter text-base md:text-lg">
+                Prendre rendez-vous
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -29,4 +41,4 @@ const Hero = () => {
   );
 };
 
-export default Hero; 
+export default Hero;

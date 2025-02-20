@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { REM, Inter } from "next/font/google";
 import "./globals.css";
+import { AuthProvider } from "@/context/AuthContext";
 
 const rem = REM({
   subsets: ["latin"],
@@ -43,7 +44,9 @@ export default function RootLayout({
       style={sfProSystem.style}
       suppressHydrationWarning
     >
-      <body className="font-inter">{children}</body>
+      <body className="font-inter">
+        <AuthProvider>{children}</AuthProvider>
+      </body>
     </html>
   );
 }

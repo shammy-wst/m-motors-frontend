@@ -3,9 +3,12 @@
 import Link from "next/link";
 import { useState } from "react";
 import { navigationLinks } from "./Navigation";
+import { useAuth } from "@/context/AuthContext";
+import { Button } from "@/components/ui/Form";
 
 const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { user, isAdmin, logout } = useAuth();
 
   return (
     <header className="fixed w-full bg-black/90 backdrop-blur-sm text-white z-50">
@@ -17,7 +20,7 @@ const Header = () => {
           </Link>
           <div className="hidden lg:flex items-center space-x-8">
             {Object.entries(navigationLinks).map(
-              ([key, links]) =>
+              ([, links]) =>
                 links[0] && (
                   <Link
                     key={links[0].href}
@@ -27,6 +30,38 @@ const Header = () => {
                     {links[0].label}
                   </Link>
                 )
+            )}
+          </div>
+          <div className="hidden lg:flex items-center space-x-4">
+            {user ? (
+              <>
+                {isAdmin && (
+                  <Link
+                    href="/admin"
+                    className="text-white hover:text-gray-300 transition-colors font-inter"
+                  >
+                    Administration
+                  </Link>
+                )}
+                <Link
+                  href="/dossiers/me"
+                  className="text-white hover:text-gray-300 transition-colors font-inter"
+                >
+                  Mes dossiers
+                </Link>
+                <Button variant="outline" onClick={logout}>
+                  Déconnexion
+                </Button>
+              </>
+            ) : (
+              <>
+                <Link href="/auth/login">
+                  <Button variant="outline">Se connecter</Button>
+                </Link>
+                <Link href="/auth/register">
+                  <Button>S&apos;inscrire</Button>
+                </Link>
+              </>
             )}
           </div>
           <button
@@ -79,6 +114,56 @@ const Header = () => {
                   </div>
                 </div>
               ))}
+
+              {/* Mobile Auth Links */}
+              <div className="px-6 py-4 mt-auto">
+                {user ? (
+                  <div className="space-y-4">
+                    {isAdmin && (
+                      <Link
+                        href="/admin"
+                        className="block py-3 hover:text-gray-300 transition-colors font-inter text-base"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                      >
+                        Administration
+                      </Link>
+                    )}
+                    <Link
+                      href="/dossiers/me"
+                      className="block py-3 hover:text-gray-300 transition-colors font-inter text-base"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      Mes dossiers
+                    </Link>
+                    <button
+                      onClick={() => {
+                        logout();
+                        setIsMobileMenuOpen(false);
+                      }}
+                      className="block w-full py-3 text-left hover:text-gray-300 transition-colors font-inter text-base"
+                    >
+                      Déconnexion
+                    </button>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    <Link
+                      href="/auth/login"
+                      className="block py-3 hover:text-gray-300 transition-colors font-inter text-base"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      Se connecter
+                    </Link>
+                    <Link
+                      href="/auth/register"
+                      className="block py-3 hover:text-gray-300 transition-colors font-inter text-base"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      S&apos;inscrire
+                    </Link>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         )}

@@ -2,10 +2,30 @@
 
 import Image from "next/image";
 import { useState, useEffect } from "react";
+import { Vehicle } from "@/types";
+import { vehiclesAPI } from "@/services/api";
 
 const FeaturedVehicles = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isMobile, setIsMobile] = useState(true);
+  const [vehicles, setVehicles] = useState<Vehicle[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const loadVehicles = async () => {
+      try {
+        const response = await vehiclesAPI.list();
+        setVehicles(response.data.data || []);
+      } catch (error) {
+        console.error("Error loading vehicles:", error);
+        setVehicles([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadVehicles();
+  }, []);
 
   useEffect(() => {
     const checkMobile = () => {
@@ -18,46 +38,8 @@ const FeaturedVehicles = () => {
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
-  const vehicles = [
-    {
-      id: 1,
-      name: "Eclipse Cross",
-      image: "/assets/images/cars/car1.png",
-      price: "29 990 €",
-    },
-    {
-      id: 2,
-      name: "ASX",
-      image: "/assets/images/cars/car2.png",
-      price: "24 990 €",
-    },
-    {
-      id: 3,
-      name: "Outlander PHEV",
-      image: "/assets/images/cars/car3.png",
-      price: "39 990 €",
-    },
-    {
-      id: 4,
-      name: "Space Star",
-      image: "/assets/images/cars/car4.png",
-      price: "19 990 €",
-    },
-    {
-      id: 5,
-      name: "L200",
-      image: "/assets/images/cars/car5.png",
-      price: "44 990 €",
-    },
-    {
-      id: 6,
-      name: "Pajero Sport",
-      image: "/assets/images/cars/car6.png",
-      price: "49 990 €",
-    },
-  ];
-
   const nextSlide = () => {
+    if (!vehicles.length) return;
     setCurrentIndex((prevIndex) => {
       const increment = isMobile ? 1 : 3;
       return prevIndex + increment >= vehicles.length
@@ -67,6 +49,7 @@ const FeaturedVehicles = () => {
   };
 
   const prevSlide = () => {
+    if (!vehicles.length) return;
     setCurrentIndex((prevIndex) => {
       const decrement = isMobile ? 1 : 3;
       return prevIndex - decrement < 0
@@ -74,6 +57,39 @@ const FeaturedVehicles = () => {
         : prevIndex - decrement;
     });
   };
+
+  if (isLoading) {
+    return (
+      <section className="flex w-full bg-white text-black py-6 md:py-16 overflow-hidden">
+        <div className="flex flex-1 flex-col px-4 md:px-8 lg:px-[20%]">
+          <div className="animate-pulse space-y-4">
+            <div className="h-8 bg-gray-200 rounded w-1/4 mx-auto" />
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="space-y-4">
+                  <div className="h-[250px] bg-gray-200 rounded" />
+                  <div className="h-6 bg-gray-200 rounded w-1/2 mx-auto" />
+                  <div className="h-4 bg-gray-200 rounded w-1/3 mx-auto" />
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (!vehicles.length) {
+    return (
+      <section className="flex w-full bg-white text-black py-6 md:py-16 overflow-hidden">
+        <div className="flex flex-1 flex-col px-4 md:px-8 lg:px-[20%]">
+          <div className="text-center">
+            <p className="text-gray-500">Aucun véhicule disponible</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="flex w-full bg-white text-black py-6 md:py-16 overflow-hidden">
@@ -128,8 +144,11 @@ const FeaturedVehicles = () => {
                   <div className="flex flex-col group">
                     <div className="relative h-[250px] md:h-[300px] mb-4 bg-white/5 rounded-lg overflow-hidden transition-transform group-hover:scale-105">
                       <Image
-                        src={vehicle.image}
-                        alt={vehicle.name}
+                        src={
+                          vehicle.imageUrls?.[0] ||
+                          "/assets/images/placeholder.jpg"
+                        }
+                        alt={`${vehicle.brand} ${vehicle.model}`}
                         fill
                         className="object-contain p-4"
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
@@ -138,10 +157,10 @@ const FeaturedVehicles = () => {
                     </div>
                     <div className="flex flex-col items-center">
                       <h3 className="text-xl md:text-2xl font-bold mb-2 font-rem">
-                        {vehicle.name}
+                        {vehicle.brand} {vehicle.model}
                       </h3>
                       <p className="text-lg md:text-xl font-inter text-gray-500">
-                        {vehicle.price}
+                        {vehicle.price.toLocaleString()} €
                       </p>
                     </div>
                   </div>

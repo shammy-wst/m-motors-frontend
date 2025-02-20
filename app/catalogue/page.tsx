@@ -1,55 +1,143 @@
-import React from 'react';
-import Header from '../components/layout/Header';
-import Footer from '../components/layout/Footer';
-import Link from 'next/link';
-import Image from 'next/image';
+"use client";
 
-const CataloguePage = () => {
-  // TODO: Remplacer par un appel API
-  const vehicles = Array(9).fill({
-    id: 1,
-    name: 'Voiture 1',
-    image: '/images/car1.jpg',
-    slug: 'voiture-1'
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { Vehicle } from "@/types";
+import { vehiclesAPI } from "@/services/api";
+import { Table, TableActions, TableSearch } from "@/components/ui/Table";
+import { Select } from "@/components/ui/Form";
+
+export default function CataloguePage() {
+  const router = useRouter();
+  const [vehicles, setVehicles] = useState<Vehicle[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [search, setSearch] = useState("");
+  const [filter, setFilter] = useState<{
+    fuel: string;
+    transmission: string;
+  }>({
+    fuel: "",
+    transmission: "",
   });
 
-  return (
-    <div className="flex flex-col min-h-screen">
-      <Header />
-      <main className="flex-1 flex flex-col pt-[120px] bg-white">
-        <div className="container mx-auto px-4 py-8">
-          <div className="flex items-center justify-center gap-2 mb-12">
-            <span className="text-2xl">/ DÉCOUVREZ</span>
-            <span className="text-2xl font-bold">LA GAMME</span>
-          </div>
+  useEffect(() => {
+    loadVehicles();
+  }, []);
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-16 mb-20">
-            {vehicles.map((vehicle, index) => (
-              <div key={index} className="flex flex-col items-center">
-                <Link href={`/catalogue/${vehicle.slug}`} className="group w-full">
-                  <div className="relative w-full aspect-[4/3] mb-6">
-                    <Image
-                      src={vehicle.image}
-                      alt={vehicle.name}
-                      fill
-                      className="object-contain"
-                    />
-                  </div>
-                  <div className="text-center">
-                    <h3 className="text-lg mb-4">{vehicle.name}</h3>
-                    <button className="border border-black px-8 py-2 text-sm hover:bg-black hover:text-white transition">
-                      En savoir plus
-                    </button>
-                  </div>
-                </Link>
+  const loadVehicles = async () => {
+    try {
+      const response = await vehiclesAPI.list();
+      setVehicles(response.data.data);
+    } catch (error) {
+      console.error("Error loading vehicles:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const filteredVehicles = vehicles.filter((vehicle) => {
+    const matchesSearch =
+      vehicle.brand.toLowerCase().includes(search.toLowerCase()) ||
+      vehicle.model.toLowerCase().includes(search.toLowerCase());
+
+    const matchesFuel = !filter.fuel || vehicle.fuel === filter.fuel;
+    const matchesTransmission =
+      !filter.transmission || vehicle.transmission === filter.transmission;
+
+    return matchesSearch && matchesFuel && matchesTransmission;
+  });
+
+  const columns = [
+    {
+      header: "Marque",
+      accessor: (vehicle: Vehicle) => vehicle.brand,
+    },
+    {
+      header: "Modèle",
+      accessor: (vehicle: Vehicle) => vehicle.model,
+    },
+    {
+      header: "Année",
+      accessor: (vehicle: Vehicle) => vehicle.year.toString(),
+    },
+    {
+      header: "Prix",
+      accessor: (vehicle: Vehicle) => `${vehicle.price.toLocaleString()} €`,
+    },
+    {
+      header: "Kilométrage",
+      accessor: (vehicle: Vehicle) => `${vehicle.mileage.toLocaleString()} km`,
+    },
+    {
+      header: "Carburant",
+      accessor: (vehicle: Vehicle) => vehicle.fuel,
+    },
+    {
+      header: "Transmission",
+      accessor: (vehicle: Vehicle) => vehicle.transmission,
+    },
+  ];
+
+  return (
+    <div className="flex flex-col min-h-screen bg-gray-50">
+      <div className="flex-1 py-8">
+        <div className="container mx-auto px-4">
+          <div className="flex flex-col">
+            <div className="flex items-center justify-between mb-8">
+              <h1 className="text-3xl font-bold text-gray-900 font-rem">
+                Catalogue
+              </h1>
+            </div>
+
+            <TableActions>
+              <div className="flex gap-4 w-full">
+                <Select
+                  value={filter.fuel}
+                  onChange={(e) =>
+                    setFilter((prev) => ({ ...prev, fuel: e.target.value }))
+                  }
+                  options={[
+                    { value: "", label: "Tous les carburants" },
+                    { value: "DIESEL", label: "Diesel" },
+                    { value: "ESSENCE", label: "Essence" },
+                    { value: "HYBRID", label: "Hybride" },
+                    { value: "ELECTRIC", label: "Électrique" },
+                  ]}
+                  className="w-48"
+                />
+                <Select
+                  value={filter.transmission}
+                  onChange={(e) =>
+                    setFilter((prev) => ({
+                      ...prev,
+                      transmission: e.target.value,
+                    }))
+                  }
+                  options={[
+                    { value: "", label: "Toutes les transmissions" },
+                    { value: "MANUAL", label: "Manuelle" },
+                    { value: "AUTOMATIC", label: "Automatique" },
+                  ]}
+                  className="w-48"
+                />
+                <TableSearch
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  placeholder="Rechercher par marque ou modèle..."
+                  className="flex-1"
+                />
               </div>
-            ))}
+            </TableActions>
+
+            <Table
+              columns={columns}
+              data={filteredVehicles}
+              isLoading={isLoading}
+              onRowClick={(vehicle) => router.push(`/vehicles/${vehicle.id}`)}
+            />
           </div>
         </div>
-      </main>
-      <Footer />
+      </div>
     </div>
   );
-};
-
-export default CataloguePage; 
+}

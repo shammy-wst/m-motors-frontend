@@ -1,32 +1,52 @@
-export const navigationLinks = {
+interface NavigationLink {
+  href: string;
+  label: string;
+}
+
+interface NavigationLinks {
+  [key: string]: NavigationLink[];
+}
+
+export const navigationLinks: NavigationLinks = {
+  main: [
+    {
+      href: "/catalogue",
+      label: "Véhicules",
+    },
+    {
+      href: "/services",
+      label: "Services",
+    },
+    {
+      href: "/contact",
+      label: "Contact",
+    },
+  ],
   nosVoitures: [
-    { href: "/catalogue", label: "Catalogue" },
-    { href: "/voiture-une", label: "Voiture Une" },
-    { href: "/voiture-deux", label: "Voiture Deux" },
-    { href: "/nouveaux-modeles", label: "Nouveaux Modèles" },
-    { href: "/diesel", label: "Diesel" },
-    { href: "/essence", label: "Essence" },
-    { href: "/hybride", label: "Hybride" },
+    { href: "/catalogue/tous", label: "Tous nos véhicules" },
+    { href: "/catalogue/diesel", label: "Diesel" },
+    { href: "/catalogue/essence", label: "Essence" },
+    { href: "/catalogue/hybride", label: "Hybride" },
+    { href: "/catalogue/electrique", label: "Électrique" },
   ],
   acheter: [
-    { href: "/reserver-essai", label: "Réserver un essai" },
-    { href: "/reprise-vehicule", label: "Reprise de Véhicule" },
-    { href: "/offres-speciales", label: "Offres Spéciales" },
-    { href: "/service-financier", label: "Service Financier" },
+    { href: "/services#essai", label: "Réserver un essai" },
+    { href: "/services#reprise", label: "Reprise de Véhicule" },
+    { href: "/services#financement", label: "Financement" },
   ],
   serviceInterne: [
-    { href: "/it-support", label: "IT / Support technique" },
-    { href: "/recrutement", label: "Recrutement" },
-    { href: "/gestion-employes", label: "Gestion des employés" },
+    { href: "/admin/support", label: "IT / Support technique" },
+    { href: "/admin/recrutement", label: "Recrutement" },
+    { href: "/admin/employes", label: "Gestion des employés" },
   ],
   contact: [
-    { href: "/nous-contacter", label: "Nous contacter" },
-    { href: "/nos-agences", label: "Nos agences" },
+    { href: "/contact", label: "Nous contacter" },
+    { href: "/contact#agences", label: "Nos agences" },
   ],
   experience: [
-    { href: "/notre-marque", label: "Notre marque" },
-    { href: "/notre-histoire", label: "Notre histoire" },
-    { href: "/nos-innovations", label: "Nos innovations" },
+    { href: "/a-propos", label: "Notre entreprise" },
+    { href: "/a-propos#histoire", label: "Notre histoire" },
+    { href: "/a-propos#innovations", label: "Nos innovations" },
   ],
   legal: [
     { href: "/mentions-legales", label: "Mentions Légales" },
